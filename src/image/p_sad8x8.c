@@ -17,12 +17,42 @@
 
 void p_sad8x8_f32(const float *x, float *m, float *r, int cols)
 {
-      /*pseudo code
-       for (i = 0; i < 8; i++)
-         for (j = 0; j < 8; j++)
-          sad += abs(m[j+i*8] - x[j+i*cols]);
-       return sad;
+	*r = 0;
+	absdiffsum_f32(m[0*8],x[0*cols], *r, 8);
+	absdiffsum_f32(m[1*8],x[1*cols], *r, 8);
+	absdiffsum_f32(m[2*8],x[2*cols], *r, 8);
+	absdiffsum_f32(m[3*8],x[3*cols], *r, 8);
+	absdiffsum_f32(m[4*8],x[4*cols], *r, 8);
+	absdiffsum_f32(m[5*8],x[5*cols], *r, 8);
+	absdiffsum_f32(m[6*8],x[6*cols], *r, 8);
+	absdiffsum_f32(m[7*8],x[7*cols], *r, 8);
+}
 
-     */
+/**
+ *
+ * Compute sum of element wise absolute difference of two vectors 'a' and 'b'.
+ *
+ * @param a     Pointer to input vector
+ *
+ * @param b     Pointer to input vector
+ *
+ * @param c     Pointer to output sum
+ *
+ * @param n     Size of 'a' and 'b' vector.
+ *
+ * @return      None
+ *
+ */
 
+void absdiffsum_f32(const float *a, const float *b, float *c, int n)
+{
+    union {
+        float f;
+        uint32_t u;
+    } diff;
+    for (int i = 0; i < n; i++) {
+        diff.f = a[i] - b[i];
+        diff.u &= 0x7FFFFFFF;
+        *c += diff.f;
+    }
 }
